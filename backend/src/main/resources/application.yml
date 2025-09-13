@@ -1,0 +1,5 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb+srv://lamnd:${MONGO_PASSWORD}@lamnd.zx4m2d7.mongodb.net/youtube_clone?retryWrites=true&w=majority&appName=Lamnd
+      auto-index-creation: true
