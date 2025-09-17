@@ -3,3 +3,13 @@ spring:
     mongodb:
       uri: mongodb+srv://lamnd:${MONGO_PASSWORD}@lamnd.zx4m2d7.mongodb.net/youtube_clone?retryWrites=true&w=majority&appName=Lamnd
       auto-index-creation: true
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+cloud:
+  aws:
+    region: ap-southeast-1  #(Singapore)
+    s3:
+      bucket: lamnd-s3-storage

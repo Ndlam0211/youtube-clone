@@ -20,7 +20,7 @@ public class User {
     private String lastName;
     private String fullName;
     private String email;
-    private Set<String> subscribedToUsers; // IDs of users this user is subscribed to
+    private Set<String> subcribedToUsers; // IDs of users this user is subscribed to
     private Set<String> subscribers; // IDs of users who are subscribed to this user
     private Set<String> likedVideos; // IDs of videos this user has liked
     private Set<String> dislikedVideos; // IDs of videos this user has disliked
