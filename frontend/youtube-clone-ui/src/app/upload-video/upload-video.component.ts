@@ -1,58 +1,77 @@
 import { Component } from '@angular/core';
-import { NgxFileDropModule, NgxFileDropEntry, FileSystemFileEntry, FileSystemDirectoryEntry } from 'ngx-file-drop';
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { NgxFileDropModule, NgxFileDropEntry } from 'ngx-file-drop';
+import { FormsModule } from '@angular/forms';
+// ⬆️ only import NgxFileDropModule for Angular's "imports" metadata
+// FileSystemFileEntry / FileSystemDirectoryEntry are DOM types — import them only for typing
+
+import type { FileSystemFileEntry, FileSystemDirectoryEntry } from 'ngx-file-drop';
+
+import { VideoService } from '../video.service';
 
 @Component({
   selector: 'app-upload-video',
   standalone: true,
-  imports: [NgxFileDropModule, NgxFileDropEntry, FileSystemFileEntry, FileSystemDirectoryEntry],
+  imports: [CommonModule, NgxFileDropModule, MatButtonModule, FormsModule], // ✅ only modules/components/pipes here
   templateUrl: './upload-video.component.html',
-  styleUrl: './upload-video.component.css'
+  styleUrls: ['./upload-video.component.css']
 })
 export class UploadVideoComponent {
   public files: NgxFileDropEntry[] = [];
+  fileUploaded: boolean = false;
+  fileEntry: FileSystemFileEntry | undefined;
+
+  constructor(private videoService: VideoService) { }
 
   public dropped(files: NgxFileDropEntry[]) {
     this.files = files;
     for (const droppedFile of files) {
-
-      // Is it a file?
       if (droppedFile.fileEntry.isFile) {
-        const fileEntry = droppedFile.fileEntry as FileSystemFileEntry;
-        fileEntry.file((file: File) => {
-
-          // Here you can access the real file
+        this.fileEntry = droppedFile.fileEntry as FileSystemFileEntry;
+        this.fileEntry.file((file: File) => {
           console.log(droppedFile.relativePath, file);
 
-          /**
-          // You could upload it like this:
-          const formData = new FormData()
-          formData.append('logo', file, relativePath)
+          this.fileUploaded = true;
+          // Here you can access the real file
+          // For example, you could use FormData to upload it to a server
+//           const formData = new FormData();
+//           formData.append('file', file, droppedFile.relativePath);
 
-          // Headers
-          const headers = new HttpHeaders({
-            'security-token': 'mytoken'
-          })
-
-          this.http.post('https://mybackend.com/api/upload/sanitize-and-save-logo', formData, { headers: headers, responseType: 'blob' })
-          .subscribe(data => {
-            // Sanitized logo returned from backend
-          })
-          **/
-
+          // Example: Upload the file using fetch API
+          /*
+          fetch('your-upload-endpoint', {
+            method: 'POST',
+            body: formData
+          }).then(response => {
+            console.log('Upload successful:', response);
+          }).catch(error => {
+            console.error('Upload error:', error);
+          });
+          */
         });
       } else {
-        // It was a directory (empty directories are added, otherwise only files)
-        const fileEntry = droppedFile.fileEntry as FileSystemDirectoryEntry;
-        console.log(droppedFile.relativePath, fileEntry);
+        const dirEntry = droppedFile.fileEntry as FileSystemDirectoryEntry;
+        console.log(droppedFile.relativePath, dirEntry);
       }
     }
   }
 
-  public fileOver(event){
+  upload() {
+    if (this.fileEntry !== undefined) {
+      this.fileEntry.file((file: File) => {
+        this.videoService.uploadVideo(file).subscribe((data: any) => {
+          console.log('Upload successful: ', data);
+        });
+      });
+    }
+  }
+
+  public fileOver(event: DragEvent) {
     console.log(event);
   }
 
-  public fileLeave(event){
+  public fileLeave(event: DragEvent) {
     console.log(event);
   }
 }

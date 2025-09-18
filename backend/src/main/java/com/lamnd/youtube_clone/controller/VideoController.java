@@ -17,5 +17,4 @@ public class VideoController {
     public void uploadVideo(@RequestParam("file") MultipartFile file) {
         videoService.uploadVideo(file);
     }
-
 }
