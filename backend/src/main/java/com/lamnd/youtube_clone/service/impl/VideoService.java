@@ -1,6 +1,7 @@
 package com.lamnd.youtube_clone.service.impl;
 
 import com.lamnd.youtube_clone.dto.request.UpdateVideoRequest;
+import com.lamnd.youtube_clone.dto.response.VideoUploadResponse;
 import com.lamnd.youtube_clone.entity.Video;
 import com.lamnd.youtube_clone.exception.ResourceNotFoundException;
 import com.lamnd.youtube_clone.repository.VideoRepo;
@@ -17,7 +18,7 @@ public class VideoService implements IVideoService {
     private final VideoRepo videoRepo;
 
     @Override
-    public void uploadVideo(MultipartFile file) {
+    public VideoUploadResponse uploadVideo(MultipartFile file) {
         // Upload file to AWS S3 and get the url
         String videoUrl = s3Service.uploadFile(file);
 
@@ -26,7 +27,13 @@ public class VideoService implements IVideoService {
         video.setVideoUrl(videoUrl);
 
         // Save video metadata to MongoDB
-        videoRepo.save(video);
+        var savedVideo = videoRepo.save(video);
+
+        // Return response
+        return VideoUploadResponse.builder()
+                .videoId(savedVideo.getId())
+                .videoUrl(videoUrl)
+                .build();
     }
 
     @Override
