@@ -1,5 +1,7 @@
 package com.lamnd.youtube_clone.controller;
 
+import com.lamnd.youtube_clone.dto.request.UpdateVideoRequest;
+import com.lamnd.youtube_clone.entity.Video;
 import com.lamnd.youtube_clone.service.IVideoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,5 +18,17 @@ public class VideoController {
     @ResponseStatus(HttpStatus.CREATED)
     public void uploadVideo(@RequestParam("file") MultipartFile file) {
         videoService.uploadVideo(file);
+    }
+
+    @PostMapping("/thumbnail")
+    @ResponseStatus(HttpStatus.CREATED)
+    public String uploadThumbnail(@RequestParam("file") MultipartFile file, @RequestParam("videoId") String videoId) {
+        return videoService.uploadThumbnail(file, videoId);
+    }
+
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public Video updateVideoMetadata(@PathVariable String id, @RequestBody UpdateVideoRequest request) {
+        return videoService.updateVideoMetadata(id, request);
     }
 }
